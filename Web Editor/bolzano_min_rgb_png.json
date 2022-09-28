@@ -1,0 +1,86 @@
+{
+  "parameters": [],
+  "process_graph": {
+    "apply1": {
+      "process_id": "apply",
+      "description": "Apply to each pixel the linear_scale_range process, to scale the values between 0-255 for a PNG image.",
+      "arguments": {
+        "process": {
+          "process_graph": {
+            "linearscalerange1": {
+              "result": true,
+              "process_id": "linear_scale_range",
+              "arguments": {
+                "inputMax": 2500,
+                "inputMin": 0,
+                "x": {
+                  "from_parameter": "x"
+                },
+                "outputMax": 255
+              }
+            }
+          }
+        },
+        "data": {
+          "from_node": "reducedimension2"
+        }
+      }
+    },
+    "loadcollection1": {
+      "process_id": "load_collection",
+      "description": "Loading the data; The order of the specified bands is important for the PNG colors to match BGR order.",
+      "arguments": {
+        "temporal_extent": [
+          "2021-07-01T00:00:00Z",
+          "2021-07-31T23:59:59Z"
+        ],
+        "spatial_extent": {
+          "east": 11.39794683620224,
+          "south": 46.458867263442784,
+          "north": 46.52468130149441,
+          "west": 11.276077914249226
+        },
+        "id": "S2_L2A_ALPS",
+        "bands": [
+          "B02",
+          "B03",
+          "B04"
+        ],
+        "properties": {}
+      }
+    },
+    "reducedimension2": {
+      "process_id": "reduce_dimension",
+      "description": "Compute a minimum time composite by reducing the temporal dimension",
+      "arguments": {
+        "data": {
+          "from_node": "loadcollection1"
+        },
+        "reducer": {
+          "process_graph": {
+            "median1": {
+              "result": true,
+              "process_id": "min",
+              "arguments": {
+                "data": {
+                  "from_parameter": "data"
+                }
+              }
+            }
+          }
+        },
+        "dimension": "t"
+      }
+    },
+    "saveresult1": {
+      "result": true,
+      "process_id": "save_result",
+      "arguments": {
+        "data": {
+          "from_node": "apply1"
+        },
+        "format": "PNG"
+      }
+    }
+  }
+}

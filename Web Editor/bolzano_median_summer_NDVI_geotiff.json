@@ -1,0 +1,125 @@
+{
+  "parameters": [],
+  "process_graph": {
+    "reduce_bands": {
+      "process_id": "reduce_dimension",
+      "description": "Compute the NDVI: (NIR - RED) / (NIR + RED)",
+      "arguments": {
+        "data": {
+          "from_node": "load_collection"
+        },
+        "reducer": {
+          "process_graph": {
+            "twabpcvur": {
+              "process_id": "array_element",
+              "arguments": {
+                "data": {
+                  "from_parameter": "data"
+                },
+                "label": "B08"
+              }
+            },
+            "kdvneu4oj": {
+              "process_id": "subtract",
+              "arguments": {
+                "x": {
+                  "from_node": "twabpcvur"
+                },
+                "y": {
+                  "from_node": "4wouktehb"
+                }
+              }
+            },
+            "nxj8y5g5n": {
+              "process_id": "add",
+              "arguments": {
+                "x": {
+                  "from_node": "twabpcvur"
+                },
+                "y": {
+                  "from_node": "4wouktehb"
+                }
+              }
+            },
+            "txuv4citv": {
+              "result": true,
+              "process_id": "divide",
+              "arguments": {
+                "x": {
+                  "from_node": "kdvneu4oj"
+                },
+                "y": {
+                  "from_node": "nxj8y5g5n"
+                }
+              }
+            },
+            "4wouktehb": {
+              "process_id": "array_element",
+              "arguments": {
+                "data": {
+                  "from_parameter": "data"
+                },
+                "label": "B04"
+              }
+            }
+          }
+        },
+        "dimension": "bands"
+      }
+    },
+    "save": {
+      "result": true,
+      "process_id": "save_result",
+      "arguments": {
+        "data": {
+          "from_node": "reduce_time"
+        },
+        "format": "GTIFF"
+      }
+    },
+    "load_collection": {
+      "process_id": "load_collection",
+      "description": "Loading the data; we select the red (B04) and near infrared (B08) Sentinel-2 bands.",
+      "arguments": {
+        "temporal_extent": [
+          "2021-06-01T00:00:00Z",
+          "2021-09-30T23:59:59Z"
+        ],
+        "spatial_extent": {
+          "east": 11.39794683620224,
+          "south": 46.458867263442784,
+          "north": 46.52468130149441,
+          "west": 11.276077914249226
+        },
+        "id": "S2_L2A_ALPS",
+        "bands": [
+          "B04",
+          "B08"
+        ]
+      }
+    },
+    "reduce_time": {
+      "process_id": "reduce_dimension",
+      "description": "Compute a median time composite by reducing the temporal dimension",
+      "arguments": {
+        "data": {
+          "from_node": "reduce_bands"
+        },
+        "reducer": {
+          "process_graph": {
+            "max": {
+              "result": true,
+              "process_id": "median",
+              "arguments": {
+                "data": {
+                  "from_parameter": "data"
+                }
+              }
+            }
+          }
+        },
+        "dimension": "t"
+      }
+    }
+  }
+}

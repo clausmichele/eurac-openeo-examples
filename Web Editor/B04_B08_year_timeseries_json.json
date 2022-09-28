@@ -1,0 +1,81 @@
+{
+  "parameters": [],
+  "process_graph": {
+    "save": {
+      "result": true,
+      "process_id": "save_result",
+      "arguments": {
+        "data": {
+          "from_node": "reduce2"
+        },
+        "format": "JSON"
+      }
+    },
+    "reduce2": {
+      "process_id": "reduce_dimension",
+      "arguments": {
+        "data": {
+          "from_node": "reduce1"
+        },
+        "reducer": {
+          "process_graph": {
+            "mean1": {
+              "result": true,
+              "process_id": "mean",
+              "arguments": {
+                "data": {
+                  "from_parameter": "data"
+                }
+              }
+            }
+          }
+        },
+        "dimension": "y"
+      }
+    },
+    "reduce1": {
+      "process_id": "reduce_dimension",
+      "arguments": {
+        "data": {
+          "from_node": "load_collection"
+        },
+        "reducer": {
+          "process_graph": {
+            "mean1": {
+              "result": true,
+              "process_id": "mean",
+              "arguments": {
+                "data": {
+                  "from_parameter": "data"
+                }
+              }
+            }
+          }
+        },
+        "dimension": "x"
+      }
+    },
+    "load_collection": {
+      "process_id": "load_collection",
+      "description": "Loading the data; we select the red (B04) and near infrared (B08) Sentinel-2 bands.",
+      "arguments": {
+        "temporal_extent": [
+          "2021-01-01T00:00:00Z",
+          "2021-12-30T23:59:59Z"
+        ],
+        "spatial_extent": {
+          "east": 11.125704001698793,
+          "south": 46.15144889281828,
+          "north": 46.153405162105116,
+          "west": 11.123144394174354
+        },
+        "id": "S2_L2A_ALPS",
+        "bands": [
+          "B04",
+          "B08"
+        ],
+        "properties": {}
+      }
+    }
+  }
+}

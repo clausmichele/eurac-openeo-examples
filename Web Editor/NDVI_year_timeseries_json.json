@@ -1,0 +1,151 @@
+{
+  "parameters": [],
+  "process_graph": {
+    "reduce_bands": {
+      "process_id": "reduce_dimension",
+      "description": "Compute the NDVI: (NIR - RED) / (NIR + RED)",
+      "arguments": {
+        "data": {
+          "from_node": "load_collection"
+        },
+        "reducer": {
+          "process_graph": {
+            "twabpcvur": {
+              "process_id": "array_element",
+              "arguments": {
+                "data": {
+                  "from_parameter": "data"
+                },
+                "label": "B08"
+              }
+            },
+            "kdvneu4oj": {
+              "process_id": "subtract",
+              "arguments": {
+                "x": {
+                  "from_node": "twabpcvur"
+                },
+                "y": {
+                  "from_node": "4wouktehb"
+                }
+              }
+            },
+            "nxj8y5g5n": {
+              "process_id": "add",
+              "arguments": {
+                "x": {
+                  "from_node": "twabpcvur"
+                },
+                "y": {
+                  "from_node": "4wouktehb"
+                }
+              }
+            },
+            "txuv4citv": {
+              "result": true,
+              "process_id": "divide",
+              "arguments": {
+                "x": {
+                  "from_node": "kdvneu4oj"
+                },
+                "y": {
+                  "from_node": "nxj8y5g5n"
+                }
+              }
+            },
+            "4wouktehb": {
+              "process_id": "array_element",
+              "arguments": {
+                "data": {
+                  "from_parameter": "data"
+                },
+                "label": "B04"
+              }
+            }
+          }
+        },
+        "dimension": "bands"
+      }
+    },
+    "save": {
+      "result": true,
+      "process_id": "save_result",
+      "arguments": {
+        "data": {
+          "from_node": "aggregate1"
+        },
+        "format": "JSON"
+      }
+    },
+    "aggregate1": {
+      "process_id": "aggregate_spatial",
+      "arguments": {
+        "data": {
+          "from_node": "reduce_bands"
+        },
+        "geometries": {
+          "coordinates": [
+            [
+              [
+                11.122454662230387,
+                46.15311345671756
+              ],
+              [
+                11.12356209638122,
+                46.15135079436962
+              ],
+              [
+                11.126409784197648,
+                46.152026640492096
+              ],
+              [
+                11.125460554925507,
+                46.153789281194804
+              ],
+              [
+                11.122454662230387,
+                46.15311345671756
+              ]
+            ]
+          ],
+          "type": "Polygon"
+        },
+        "reducer": {
+          "process_graph": {
+            "mean1": {
+              "result": true,
+              "process_id": "mean",
+              "arguments": {
+                "data": {
+                  "from_parameter": "data"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "load_collection": {
+      "process_id": "load_collection",
+      "description": "Loading the data; we select the red (B04) and near infrared (B08) Sentinel-2 bands.",
+      "arguments": {
+        "temporal_extent": [
+          "2021-01-01T00:00:00Z",
+          "2021-12-30T23:59:59Z"
+        ],
+        "spatial_extent": {
+          "east": 11.229101754741366,
+          "south": 46.132142720685295,
+          "north": 46.179749279515164,
+          "west": 11.072955607687955
+        },
+        "id": "S2_L2A_ALPS",
+        "bands": [
+          "B04",
+          "B08"
+        ],
+        "properties": {}
+      }
+    }
+  }
+}

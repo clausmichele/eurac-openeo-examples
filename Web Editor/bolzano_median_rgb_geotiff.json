@@ -1,0 +1,61 @@
+{
+  "parameters": [],
+  "process_graph": {
+    "loadcollection1": {
+      "process_id": "load_collection",
+      "description": "Loading the data; we select the red (B04), green (B03) and blue (B02) Sentinel-2 bands.",
+      "arguments": {
+        "temporal_extent": [
+          "2021-07-01T00:00:00Z",
+          "2021-07-31T23:59:59Z"
+        ],
+        "spatial_extent": {
+          "east": 11.39794683620224,
+          "south": 46.458867263442784,
+          "north": 46.52468130149441,
+          "west": 11.276077914249226
+        },
+        "id": "S2_L2A_ALPS",
+        "bands": [
+          "B04",
+          "B03",
+          "B02"
+        ],
+        "properties": {}
+      }
+    },
+    "reducedimension2": {
+      "process_id": "reduce_dimension",
+      "description": "Compute a median time composite by reducing the temporal dimension",
+      "arguments": {
+        "data": {
+          "from_node": "loadcollection1"
+        },
+        "reducer": {
+          "process_graph": {
+            "median1": {
+              "result": true,
+              "process_id": "median",
+              "arguments": {
+                "data": {
+                  "from_parameter": "data"
+                }
+              }
+            }
+          }
+        },
+        "dimension": "t"
+      }
+    },
+    "saveresult1": {
+      "result": true,
+      "process_id": "save_result",
+      "arguments": {
+        "data": {
+          "from_node": "reducedimension2"
+        },
+        "format": "GTIFF"
+      }
+    }
+  }
+}
