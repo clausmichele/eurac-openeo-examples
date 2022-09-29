@@ -18,11 +18,15 @@ It loads the RGB bands (B04,B03,B02) from the Sentinel-2 L2A collection over the
 
 https://editor.openeo.org/?server=https://openeo.eurac.edu&process=https://raw.githubusercontent.com/clausmichele/eurac-openeo-examples/main/Web+Editor/bolzano_median_rgb_png.json&discover=1
 
+![median_png.png](./imgs/median_png.png)
+
 ### 3. Median temporal RGB composite geoTIFF
 
 It loads the RGB bands (B04,B03,B02) from the Sentinel-2 L2A collection over the Alps `S2_L2A_ALPS` from the area of Bolzano (Italy). It takes the median over time and saves the result as a geoTIFF for a direct visualization over a reference map.
 
 https://editor.openeo.org/?server=https://openeo.eurac.edu&process=https://raw.githubusercontent.com/clausmichele/eurac-openeo-examples/main/Web+Editor/bolzano_median_rgb_geotiff.json&discover=1
+
+![median_tiff.png](./imgs/median_tiff.png)
 
 ### 4. Yearly average NDVI timeseries JSON
 
@@ -30,9 +34,12 @@ It loads the red and nir bands (B04,B08) from the Sentinel-2 L2A collection over
 
 https://editor.openeo.org/?server=https://openeo.eurac.edu&process=https://raw.githubusercontent.com/clausmichele/eurac-openeo-examples/main/Web+Editor/NDVI_year_timeseries_json.json&discover=1
 
+![nsvi_json.png](./imgs/ndvi_json.png)
+
 ### 5. Summer median NDVI geoTIFF
 
 It loads the red and nir bands (B04,B08) from the Sentinel-2 L2A collection over the Alps `S2_L2A_ALPS`. It computes the NDVI: (NIR - RED) / (NIR + RED), takes the median over a the summer months and saves the result as a geoTIFF.
 
 https://editor.openeo.org/?server=https://openeo.eurac.edu&process=https://raw.githubusercontent.com/clausmichele/eurac-openeo-examples/main/Web+Editor/bolzano_median_summer_NDVI_geotiff.json&discover=1
 
+![ndvi_tiff.png](./imgs/ndvi_tiff.png)
