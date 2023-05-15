@@ -1,11 +1,5 @@
-# Import necessary libraries
-from time import time
-import rasterio
+# Import necessary libraries for interactive maps
 import numpy as np
-import openeo
-import math
-from openeo.processes import *
-from openeo.rest.datacube import PGNode, THIS
 import xarray as xr
 import rioxarray
 from ipyleaflet import (
@@ -22,20 +16,11 @@ from ipyleaflet import (
     WMSLayer,
     FullScreenControl
 )
-import ipywidgets as widgets
 from ipywidgets import Output, FloatSlider
-from traitlets import link
 import shapely.geometry
-import os
 import xarray_leaflet
-from xarray_leaflet.transform import passthrough
 import matplotlib.pyplot as plt
-from matplotlib.colors import ListedColormap
-from bqplot import Lines, Figure, LinearScale, DateScale, Axis, Scatter
-import bqplot.pyplot as bqplt
-from datetime import datetime
 import json
-import hvplot.xarray
 import PIL
 from base64 import b64encode
 from io import StringIO, BytesIO
@@ -123,7 +108,7 @@ def addLayer(inMap,path,name,clip=[0,0.8],bands=None):
             if 'variable' in da.dims and 'bands' in da.dims:
                 da = da.drop('variable').squeeze('variable').rename({'bands':'variable'})
         else:
-            da = xr.open_rasterio(path)
+            da = rioxarray.open_rasterio(path)
             if 't' in da.dims:
                 da = da.rename({'band':'variable'}).drop('t').squeeze('t').astype(np.float32)
             else:
@@ -193,70 +178,6 @@ def addS2Tiles(inMap):
 
     s2_tiles_layer = GeoJSON(data=data,name='S2_tiles')
     inMap.map.add_layer(s2_tiles_layer)
-    return
-
-
-def addTimeseries(inMap,path,bands,new_plot):
-    px_series = xr.open_dataarray(path)
-    if 't' in px_series.dims:
-        date_start = px_series.t.min().values
-        date_end = px_series.t.max().values
-        color = ['blue','red','green','yellow']
-
-        for i,b in enumerate(bands):
-            x_data = px_series.t.values
-            y_data = px_series.to_array().loc[dict(variable=b)][:,0,0].values
-            x_data = x_data[~np.isnan(y_data)]
-            y_data = y_data[~np.isnan(y_data)]
-            x_data = x_data[y_data!=0]
-            y_data = y_data[y_data!=0]
-            axes_options = {'x': {'label':'Time', 'side':'bottom', 'num_ticks':8, 'tick_format':'%b %y'}, 'y': {'orientation':'vertical', 'side':'left', 'num_ticks':10}}
-            if i==0:
-                title = ''
-                for x in bands:
-                    title += (x + ' ')
-                title += ' timeseries'
-                if new_plot:
-                    inMap.figure = bqplt.figure(title=title,layout={'max_height': '250px', 'width': '600px'})
-                else:
-                    if inMap.figure is not None:
-                        pass
-                    else:
-                        inMap.figure = bqplt.figure(title=title,layout={'max_height': '250px', 'width': '600px'})
-            scatt = bqplt.scatter(x_data, y_data, labels=[b], display_legend=True, colors=[color[i]], default_size=10, axes_options=axes_options)
-            widget_control = WidgetControl(widget=inMap.figure, position='bottomright')
-    else:
-        date_start = px_series.time.min().values
-        date_end = px_series.time.max().values
-        color = ['blue','red','green','yellow']
-
-        for i,b in enumerate(bands):
-            x_data = px_series.time.values
-            y_data = px_series.loc[dict(variable=b)][:,0,0].values
-            x_data = x_data[~np.isnan(y_data)]
-            y_data = y_data[~np.isnan(y_data)]
-            x_data = x_data[y_data!=0]
-            y_data = y_data[y_data!=0]
-            axes_options = {'x': {'label':'Time', 'side':'bottom', 'num_ticks':8, 'tick_format':'%b %y'}, 'y': {'orientation':'vertical', 'side':'left', 'num_ticks':10}}
-            if i==0:
-                title = ''
-                for x in bands:
-                    title += (x + ' ')
-                title += ' timeseries'
-                if new_plot:
-                    inMap.figure = bqplt.figure(title=title,layout={'max_height': '250px', 'width': '600px'})
-                else:
-                    if inMap.figure is not None:
-                        pass
-                    else:
-                        inMap.figure = bqplt.figure(title=title,layout={'max_height': '250px', 'width': '600px'})
-            scatt = bqplt.scatter(x_data, y_data, labels=[b], display_legend=True, colors=[color[i]], default_size=10, axes_options=axes_options)
-            widget_control = WidgetControl(widget=inMap.figure, position='bottomright')
-    
-    if inMap.figure_widget is not None:
-        inMap.map.remove_control(inMap.figure_widget)
-    inMap.figure_widget = widget_control
-    inMap.map.add_control(inMap.figure_widget)
     return
     
 def tone_mapping(B04,B03,B02):
