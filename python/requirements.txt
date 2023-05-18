@@ -1,0 +1,12 @@
+numpy
+ipyleaflet
+xarray
+rioxarray
+rasterio
+matplotlib
+shapely
+scipy
+netcdf4
+h5netcdf
+xarray_leaflet
+openeo[localprocessing]
